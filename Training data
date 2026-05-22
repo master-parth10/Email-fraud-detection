@@ -1,1 +1,95 @@
+import tkinter as tk
+from tkinter import messagebox
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.naive_bayes import MultinomialNB
+
+# -------------------------------
+# Training Data
+# -------------------------------
+
+emails = [
+    "Win money now",
+    "Claim your free prize",
+    "Your account is suspended",
+    "Meeting scheduled tomorrow",
+    "Project submission approved",
+    "Lunch at 2 PM",
+    "Click here to verify account",
+    "Important bank update",
+]
+
+labels = [
+    "Fraud",
+    "Fraud",
+    "Fraud",
+    "Safe",
+    "Safe",
+    "Safe",
+    "Fraud",
+    "Fraud"
+]
+
+# ML Model
+vectorizer = CountVectorizer()
+X = vectorizer.fit_transform(emails)
+
+model = MultinomialNB()
+model.fit(X, labels)
+
+# -------------------------------
+# Main Window
+# -------------------------------
+
+root = tk.Tk()
+root.title("Email Fraud Detection")
+root.geometry("700x500")
+root.configure(bg="#1e1e2f")
+
+# -------------------------------
+# Functions
+# -------------------------------
+
+def show_login():
+    login_frame.tkraise()
+
+def show_detector():
+    detector_frame.tkraise()
+
+def show_result():
+    result_frame.tkraise()
+
+def login():
+    username = user_entry.get()
+    password = pass_entry.get()
+
+    if username == "admin" and password == "1234":
+        show_detector()
+    else:
+        messagebox.showerror("Error", "Invalid Login")
+
+def detect_email():
+    email_text = email_box.get("1.0", tk.END)
+
+    transformed = vectorizer.transform([email_text])
+
+    prediction = model.predict(transformed)[0]
+
+    result_label.config(text=f"Result: {prediction}")
+if prediction == "Fraud":
+        result_label.config(fg="red")
+    else:
+        result_label.config(fg="green")
+
+    show_result()
+
+# -------------------------------
+# Frames
+# -------------------------------
+
+login_frame = tk.Frame(root, bg="#1e1e2f")
+detector_frame = tk.Frame(root, bg="#1e1e2f")
+result_frame = tk.Frame(root, bg="#1e1e2f")
+
+for frame in (login_frame, detector_frame, result_frame):
+    frame.place(relwidth=1, relheight=1)
 
